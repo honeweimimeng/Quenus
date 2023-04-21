@@ -6,15 +6,15 @@ import (
 )
 
 type MemDirectory struct {
-	core *support.MMapCore
+	core support.MMapCore
 }
 
 func (d *MemDirectory) Reader() io.Reader {
-	return d.core
+	return &d.core
 }
 
 func (d *MemDirectory) Writer() io.Writer {
-	return d.core
+	return &d.core
 }
 
 func (d *MemDirectory) Close() io.Closer {

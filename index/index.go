@@ -1,8 +1,12 @@
 package index
 
-import "github.com/honewemimeng/quenus/directory"
+import (
+	"github.com/honeweimimeng/eventgo/driver/event"
+	"github.com/honewemimeng/quenus/directory"
+)
 
 type Index struct {
+	boot           event.BootStrap
 	meta           *Meta
 	segmentManager *SegmentManager
 	d              directory.Directory
@@ -10,15 +14,7 @@ type Index struct {
 
 func OpenIndex(d directory.Directory) *Index {
 	i := &Index{d: d}
-	i.Load()
 	return i
-}
-
-func (i *Index) Load() {
-	i.LoadMeta()
-}
-
-func (i *Index) LoadMeta() {
 }
 
 func (i *Index) Directory() directory.Directory {
@@ -27,4 +23,12 @@ func (i *Index) Directory() directory.Directory {
 
 func (i *Index) ReadSegment() {
 
+}
+
+func (i *Index) LoadMeta() *Index {
+	return i
+}
+
+func (i *Index) LoadSegment() *Index {
+	return i
 }
