@@ -28,9 +28,9 @@ func (c *InitializerChain) Next() ManagerInitializer {
 
 func (c *InitializerChain) Process(m *Manager) bool {
 	c.manager = m
-	c.AddEventHandle(NewReader(), func(ch chan []event.Proto) {
+	c.AddEventHandle(NewReader(m.ctx, m.idx), func(ch chan []event.Proto) {
 		c.manager.readAdvice = ch
-	}).AddEventHandle(NewWriter(), func(ch chan []event.Proto) {
+	}).AddEventHandle(NewWriter(m.ctx, m.idx), func(ch chan []event.Proto) {
 		c.manager.writeAdvice = ch
 	})
 	return c.Next() != nil

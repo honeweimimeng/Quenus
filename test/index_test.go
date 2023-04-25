@@ -15,7 +15,7 @@ func TestAddDoc(t *testing.T) {
 func TestIndex(t *testing.T) {
 	ctx := &directory.Context{Log: logrus.New()}
 	d := directory.NewMMapDirectory(ctx)
-	manager := index.NewManagerBuilder(d).Build().Start()
+	manager := index.NewManagerBuilder(d).Build().StartListener()
 	manager.Write(&document.Document{}, &document.Document{})
 	time.Sleep(200 * time.Second)
 	println(manager)

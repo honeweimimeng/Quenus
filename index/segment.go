@@ -1,5 +1,7 @@
 package index
 
-type Segment struct {
-	meta *SegmentMeta
+type Segment interface {
+}
+
+type SegmentManager struct {
 }

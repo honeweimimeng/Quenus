@@ -1,14 +1,20 @@
 package field
 
 type IndexField interface {
+	Id() int
 	Name() string
 	Val() any
 	ValBin() []byte
 }
 
 type Proto struct {
+	id   int
 	name string
 	val  any
+}
+
+func (p *Proto) Id() int {
+	return p.id
 }
 
 func (p *Proto) Name() string {

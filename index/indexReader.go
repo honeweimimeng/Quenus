@@ -6,15 +6,17 @@ import (
 )
 
 type Reader struct {
+	idx *Index
+	ctx *IContext
 }
 
-func NewReader() *Reader {
-	return &Reader{}
+func NewReader(ctx *IContext, idx *Index) *Reader {
+	return &Reader{ctx: ctx, idx: idx}
 }
 
 func (r *Reader) WriteDocHandle() event.SimpleHandler {
 	return func(ch driver.Channel) {
-
+		println("===>read", ch.Msg())
 	}
 }
 

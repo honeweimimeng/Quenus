@@ -10,6 +10,7 @@ type Registry interface {
 }
 
 type Manager struct {
+	ctx         *IContext
 	idx         *Index
 	writeAdvice chan []event.Proto
 	readAdvice  chan []event.Proto
@@ -18,11 +19,11 @@ type Manager struct {
 }
 
 func NewManager(init ManagerInitializer) *Manager {
-	manager := &Manager{InitChain: &InitializerChain{next: init}}
+	manager := &Manager{InitChain: &InitializerChain{next: init}, ctx: NewIndexCtx()}
 	return manager
 }
 
-func (m *Manager) Start() *Manager {
+func (m *Manager) StartListener() *Manager {
 	m.boot.StartUp()
 	return m
 }
