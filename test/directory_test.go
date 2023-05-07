@@ -9,19 +9,13 @@ func TestMMap(t *testing.T) {
 	d := &directory.MMapDirectory{}
 	path := "C:\\workspace\\quenus\\data\\temp.txt"
 	res := make([]byte, 10)
-	fSlice := d.FileOp(path)
+	fSlice := d.FileOp(path, -1)
 	defer func() {
 		err := fSlice.Close()
 		if err != nil {
 			panic(err.Error())
 		}
 	}()
-	i := fSlice.Io
-	_, err := i.Write([]byte{'c', 'e', 'l', 'l', 'd'})
-	if err != nil {
-		panic(err.Error())
-	}
-	_, err = i.Read(res)
 	println(string(res))
 }
 

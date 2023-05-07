@@ -16,6 +16,9 @@ func NewWriter(ctx *IContext, idx *Index) *Writer {
 }
 
 func (r *Writer) WriteDocHandle(doc *document.Document) {
+	segment := r.idx.segmentManager.GetSegment(r.idx)
+	writer := NewSegmentWriter(segment)
+	writer.WriterDoc(doc)
 }
 
 func (r *Writer) Commit() {

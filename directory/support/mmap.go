@@ -8,22 +8,27 @@ import (
 type MMapCore struct {
 	File *os.File
 	fMap *mmap.Mapping
-	Len  int
+	Cap  int
 }
 
-func (r *MMapCore) Issued(file *os.File) (*MMapCore, error) {
-	info, _ := file.Stat()
-	fSize := uintptr(info.Size())
-	size := uintptr(r.Len)
-	if fSize > size {
-		size = fSize
+func IssuedMMap(file *os.File, cap int) (*MMapCore, error) {
+	core := &MMapCore{File: file}
+	return core, core.getMMap(file, cap)
+}
+
+func (r *MMapCore) getMMap(file *os.File, cap int) error {
+	fSize := uintptr(cap)
+	if fSize == 0 {
+		r.fMap = &mmap.Mapping{}
+		return nil
 	}
-	m, err := mmap.New(file.Fd(), 0, size, mmap.ModeReadWrite, 0)
+	m, err := mmap.New(file.Fd(), 0, fSize, mmap.ModeReadWrite, 0)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	core := &MMapCore{File: file, fMap: m, Len: int(m.Length())}
-	return core, nil
+	r.fMap = m
+	r.Cap = cap
+	return nil
 }
 
 func (r *MMapCore) Read(p []byte) (n int, err error) {
@@ -35,11 +40,45 @@ func (r *MMapCore) ReadAt(p []byte, off int64) (n int, err error) {
 }
 
 func (r *MMapCore) Write(p []byte) (n int, err error) {
-	return r.WriteAt(p, 0)
+	info, _ := r.File.Stat()
+	return r.WriteAt(p, info.Size())
 }
 
-func (r *MMapCore) WriteAt(p []byte, off int64) (n int, err error) {
+func (r *MMapCore) WriteAt(p []byte, off int64) (int, error) {
+	_ = r.fMap.Lock()
+	defer func() { _ = r.fMap.Unlock() }()
+	newSize := int(off) + len(p)
+	if newSize > int(r.fMap.Length()) {
+		err := r.refreshMMap(newSize, int(r.fMap.Length()))
+		if err != nil {
+			return 0, err
+		}
+	}
 	return r.fMap.WriteAt(p, off)
+}
+
+func (r *MMapCore) ReadAll() ([]byte, error) {
+	info, _ := r.File.Stat()
+	data := make([]byte, info.Size())
+	_, err := r.Read(data)
+	return data, err
+}
+
+func (r *MMapCore) refreshMMap(newSize int, oldSize int) error {
+	added := make([]byte, newSize-oldSize)
+	_, err := r.File.Write(added)
+	if err != nil {
+		return err
+	}
+	err = r.getMMap(r.File, newSize)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *MMapCore) CurMem() []byte {
+	return nil
 }
 
 func (r *MMapCore) Close() error {

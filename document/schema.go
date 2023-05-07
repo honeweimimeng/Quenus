@@ -6,8 +6,17 @@ import (
 )
 
 type FieldProto struct {
+	text         bool
 	field        field.IndexField
 	analyzerName string
+}
+
+func (p *FieldProto) IsText() bool {
+	return p.text
+}
+
+func (p *FieldProto) IsBin() bool {
+	return !p.text
 }
 
 type Schema struct {
@@ -18,6 +27,10 @@ type Schema struct {
 
 func NewSchema() *Schema {
 	return &Schema{}
+}
+
+func (s *Schema) ProtoList() []*FieldProto {
+	return s.fieldProto
 }
 
 func (s *Schema) GetFieldProto(fi field.IndexField) *FieldProto {

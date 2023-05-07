@@ -18,8 +18,12 @@ type Manager struct {
 	InitChain   *InitializerChain
 }
 
-func NewManager(init ManagerInitializer) *Manager {
-	manager := &Manager{InitChain: &InitializerChain{next: init}, ctx: NewIndexCtx()}
+func NewManager(idx *Index, init ManagerInitializer) *Manager {
+	manager := &Manager{
+		idx:       idx,
+		InitChain: &InitializerChain{next: init},
+		ctx:       NewIndexCtx(),
+	}
 	return manager
 }
 

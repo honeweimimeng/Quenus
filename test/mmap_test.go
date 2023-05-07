@@ -10,13 +10,10 @@ import (
 var testData = []byte("0123456789ABCDEF")
 var testPath = filepath.Join("C:\\workspace\\quenus\\", "data\\temp.txt")
 
-func init() {
+func openFile(flags int) *os.File {
 	f := openFile(os.O_RDWR | os.O_CREATE | os.O_TRUNC)
 	f.Write(testData)
 	f.Close()
-}
-
-func openFile(flags int) *os.File {
 	f, err := os.OpenFile(testPath, flags, 0644)
 	if err != nil {
 		panic(err.Error())

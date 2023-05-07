@@ -6,6 +6,7 @@ import (
 )
 
 type DataIO interface {
+	ReadAll() ([]byte, error)
 	io.Writer
 	io.WriterAt
 	io.Reader
@@ -15,24 +16,28 @@ type DataIO interface {
 
 type FileSlice struct {
 	File *os.File
-	Path string
-	Io   DataIO
+	Path string `json:"path"`
+	Cur  uint64 `json:"cur"`
 }
 
 func (f *FileSlice) Close() error {
-	err := f.Io.Close()
-	if err != nil {
-		return err
-	}
 	return f.File.Close()
 }
 
 type Directory interface {
-	FileOp(path string) *FileSlice
-	Read(path string) DataIO
-	Write(path string) DataIO
-	Exists(path string) (bool, error)
-	Delete(path string)
+	FileOp(path string, cap int) *FileSlice
+	Reader(file *FileSlice) DataIO
+	Writer(file *FileSlice) DataIO
+	Exists(path string, create bool) (bool, error)
+	Delete(file *FileSlice)
+}
+
+type IOErr struct {
+	Err string
+}
+
+func (e *IOErr) Error() string {
+	return e.Err
 }
 
 /*
