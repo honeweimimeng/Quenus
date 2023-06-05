@@ -36,7 +36,8 @@ func (c *InitializerChain) Process(m *Manager) bool {
 	return c.Next() != nil
 }
 
+// AddEventHandle eventTrigger type of initializer,trigger event through chan
 func (c *InitializerChain) AddEventHandle(eventR Registry, setter event.SimpleTrigger) *InitializerChain {
-	c.manager.boot.EventLoop().Handle(eventR.EventHandle()).ExTrigger(setter)
+	c.manager.boot.EventLoop().Handle(eventR.EventHandle()).ExTrigger(setter, true)
 	return c
 }

@@ -3,25 +3,36 @@ package index
 import (
 	"github.com/honeweimimeng/eventgo/driver"
 	"github.com/honeweimimeng/eventgo/driver/event"
+	"github.com/honewemimeng/quenus/batch"
 	"github.com/honewemimeng/quenus/document"
 )
 
 type Writer struct {
-	idx *Index
-	ctx *IContext
+	idx              *Index
+	docBatch         batch.DocBatch
+	newSegmentPolicy batch.ReleasePolicy
+	ctx              *IContext
 }
 
 func NewWriter(ctx *IContext, idx *Index) *Writer {
-	return &Writer{ctx: ctx, idx: idx}
+	perDocBatch := batch.NewPerDocBatch(ctx.perPoolCap, batch.NewZeroDocDataBatch())
+	return &Writer{
+		ctx:      ctx,
+		idx:      idx,
+		docBatch: perDocBatch,
+	}
 }
 
 func (r *Writer) WriteDocHandle(doc *document.Document) {
-	segment := r.idx.segmentManager.GetSegment(r.idx)
-	writer := NewSegmentWriter(segment)
-	writer.WriterDoc(doc)
+	r.docBatch.ProcessDoc(doc)
+	if r.docBatch.MaybeRelease(r.newSegmentPolicy) {
+		r.idx.segmentManager.PubSegment()
+	}
 }
 
 func (r *Writer) Commit() {
+	r.docBatch.Flush()
+	r.idx.segmentManager.PubSegment()
 }
 
 func (r *Writer) EventHandle() ([]event.Proto, event.SimpleHandler) {

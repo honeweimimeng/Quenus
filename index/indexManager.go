@@ -32,7 +32,7 @@ func (m *Manager) StartListener() *Manager {
 	return m
 }
 
-func (m *Manager) Write(doc ...*document.Document) {
+func (m *Manager) AddDoc(doc ...*document.Document) {
 	m.publishDoc(m.writeAdvice, func(doc *document.Document) event.Proto {
 		return NewWRITE(doc)
 	}, doc...)

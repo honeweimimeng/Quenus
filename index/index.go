@@ -16,12 +16,15 @@ type Index struct {
 }
 
 func OpenIndex(d directory.Directory, schema *document.Schema, policy SegmentPolicy) *Index {
-	i := &Index{dir: d, segmentManager: NewSegmentManager(policy)}
+	i := &Index{
+		dir:            d,
+		segmentManager: NewSegmentManager(policy),
+	}
 	exits, _ := d.Exists(MetaFileName, false)
 	if exits {
 		return i.LoadMeta()
 	}
-	return i.create(schema)
+	return i.createIndex(schema)
 }
 
 func (i *Index) Schema() *document.Schema {
@@ -32,7 +35,7 @@ func (i *Index) Directory() directory.Directory {
 	return i.dir
 }
 
-func (i *Index) create(schema *document.Schema) *Index {
+func (i *Index) createIndex(schema *document.Schema) *Index {
 	_, err := i.dir.Exists(MetaFileName, true)
 	var segments []*SegmentMeta
 	indexMeta := NewIndexMeta(segments, schema)
@@ -59,7 +62,8 @@ func (i *Index) LoadMeta() *Index {
 }
 
 type IContext struct {
-	logger *logrus.Logger
+	logger     *logrus.Logger
+	perPoolCap int
 }
 
 func NewIndexCtx() *IContext {

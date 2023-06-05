@@ -4,12 +4,11 @@ go 1.19
 
 require (
 	github.com/alexeymaximov/mmap v0.3.0
-	github.com/honeweimimeng/eventgo v0.2.2
+	github.com/dgryski/go-multiq v0.0.0-20160801121406-e67f3864a164
+	github.com/honeweimimeng/eventgo v0.3.0
 	github.com/oklog/ulid/v2 v2.1.0
+	github.com/quentin-m/pqueue v0.0.0-20161009184034-2119c879bfd3
 	github.com/sirupsen/logrus v1.9.0
 )
 
-require (
-	github.com/honeweimimeng/eucalyptus v0.0.2 // indirect
-	golang.org/x/sys v0.7.0 // indirect
-)
+require golang.org/x/sys v0.7.0 // indirect

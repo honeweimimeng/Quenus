@@ -14,7 +14,7 @@ func TestAddDoc(t *testing.T) {
 func TestIndex(t *testing.T) {
 	d := directory.NewManagerDirectory("C:\\workspace\\quenus\\data")
 	manager := index.NewManagerBuilder().Build(d).StartListener()
-	manager.Write(&document.Document{}, &document.Document{})
+	manager.AddDoc(&document.Document{}, &document.Document{})
 	time.Sleep(200 * time.Second)
 	println(manager)
 }

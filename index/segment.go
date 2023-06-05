@@ -27,7 +27,6 @@ func (s *Segment) AfterUpdateDoc() {
 }
 
 type SegmentManager struct {
-	cacheSegments *Segment
 	mergeSegments []*Segment
 	segments      []*Segment
 	segmentPolicy SegmentPolicy
@@ -40,23 +39,13 @@ func NewSegmentManager(segmentPolicy SegmentPolicy) *SegmentManager {
 	}
 }
 
-func (s *SegmentManager) GetSegment(idx *Index) *Segment {
-	if s.segmentPolicy.NewSegment(s) {
-		//new Segment
-		s.mux.Lock()
-		defer s.mux.Unlock()
-		if !s.segmentPolicy.NewSegment(s) {
-			return s.cacheSegments
-		}
-		s.cacheSegments = s.NewSegment(idx, NewSegmentMeta(0))
-		return s.cacheSegments
-	}
-	return s.cacheSegments
-}
-
 func (s *SegmentManager) NewSegment(idx *Index, meta *SegmentMeta) *Segment {
 	return &Segment{
 		meta: meta,
 		idx:  idx,
 	}
+}
+
+func (s *SegmentManager) PubSegment() {
+
 }
